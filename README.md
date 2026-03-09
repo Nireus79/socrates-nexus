@@ -4,9 +4,12 @@
 
 Extracted from **18 months of production use** in [Socrates AI](https://github.com/Nireus79/Socrates) platform.
 
+[![PyPI version](https://img.shields.io/pypi/v/socrates-nexus.svg)](https://pypi.org/project/socrates-nexus/)
+[![Downloads](https://img.shields.io/pypi/dm/socrates-nexus.svg)](https://pypi.org/project/socrates-nexus/)
+[![Tests](https://github.com/Nireus79/socrates-nexus/actions/workflows/test.yml/badge.svg)](https://github.com/Nireus79/socrates-nexus/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://github.com/Nireus79/socrates-nexus/actions/workflows/test.yml/badge.svg)](https://github.com/Nireus79/socrates-nexus/actions)
+[![Coverage](https://img.shields.io/badge/coverage-73%25-brightgreen)](https://github.com/Nireus79/socrates-nexus/blob/main/tests)
 
 ## Why Socrates Nexus?
 
@@ -367,7 +370,9 @@ See the `examples/` directory for complete, runnable examples:
 - [Providers Guide](docs/providers.md) - Setup for each LLM provider
 - [API Reference](docs/api-reference.md) - Complete API documentation
 - [Advanced Usage](docs/advanced.md) - Caching, fallbacks, monitoring
-- [Comparisons](docs/comparisons.md) - vs raw SDKs
+- [Architecture](docs/architecture.md) - System design and patterns
+- [Comparison](docs/comparison.md) - vs LangChain, LiteLLM, and others
+- [Roadmap](ROADMAP.md) - Feature roadmap and milestones
 
 ## Development
 
