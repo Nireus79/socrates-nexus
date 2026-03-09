@@ -185,9 +185,7 @@ class AnthropicProvider(BaseProvider):
         except Exception as e:
             self._handle_anthropic_error(e, "achat")
 
-    def stream(
-        self, message: str, on_chunk: Callable[[str], None], **kwargs
-    ) -> ChatResponse:
+    def stream(self, message: str, on_chunk: Callable[[str], None], **kwargs) -> ChatResponse:
         """
         Stream chat response from Claude.
 

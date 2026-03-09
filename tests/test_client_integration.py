@@ -36,7 +36,7 @@ class TestLLMClientInitialization:
             model="claude-3",
             api_key="test",
             cache_responses=True,
-            cache_ttl=3600
+            cache_ttl=3600,
         )
         client = LLMClient(config=config)
         assert client._cache is not None
@@ -44,10 +44,7 @@ class TestLLMClientInitialization:
     def test_initialization_with_cache_disabled(self):
         """Test client initialization without caching."""
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            cache_responses=False
+            provider="anthropic", model="claude-3", api_key="test", cache_responses=False
         )
         client = LLMClient(config=config)
         assert client._cache is None
@@ -129,8 +126,14 @@ class TestChatIntegration:
             content="Hello",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(input_tokens=10, output_tokens=20, total_tokens=30,
-                           cost_usd=0.0, provider="anthropic", model="claude-3")
+            usage=TokenUsage(
+                input_tokens=10,
+                output_tokens=20,
+                total_tokens=30,
+                cost_usd=0.0,
+                provider="anthropic",
+                model="claude-3",
+            ),
         )
         mock_chat.return_value = mock_response
 
@@ -147,8 +150,14 @@ class TestChatIntegration:
             content="Response",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(input_tokens=5, output_tokens=10, total_tokens=15,
-                           cost_usd=0.0, provider="anthropic", model="claude-3")
+            usage=TokenUsage(
+                input_tokens=5,
+                output_tokens=10,
+                total_tokens=15,
+                cost_usd=0.0,
+                provider="anthropic",
+                model="claude-3",
+            ),
         )
         mock_chat.return_value = mock_response
 
@@ -159,6 +168,7 @@ class TestChatIntegration:
 
     def test_usage_tracking(self):
         """Test that usage is tracked through callbacks."""
+
         # Create a simple mock provider that tracks callbacks
         class MockProvider:
             def __init__(self, config):
@@ -179,8 +189,8 @@ class TestChatIntegration:
                         total_tokens=30,
                         cost_usd=0.001,
                         provider="test",
-                        model="test-model"
-                    )
+                        model="test-model",
+                    ),
                 )
 
         # Manually create client with mock provider
@@ -223,10 +233,7 @@ class TestChatIntegration:
                 request_count[0] += 1
                 usage, content = responses_data[idx]
                 return ChatResponse(
-                    content=content,
-                    provider="test",
-                    model="test-model",
-                    usage=usage
+                    content=content, provider="test", model="test-model", usage=usage
                 )
 
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
@@ -257,13 +264,10 @@ class TestCacheIntegration:
             total_tokens=30,
             cost_usd=0.0,
             provider="anthropic",
-            model="claude-3"
+            model="claude-3",
         )
         response = ChatResponse(
-            content="Cached response",
-            provider="anthropic",
-            model="claude-3",
-            usage=usage
+            content="Cached response", provider="anthropic", model="claude-3", usage=usage
         )
         mock_chat.return_value = response
 
@@ -272,7 +276,7 @@ class TestCacheIntegration:
             model="claude-3",
             api_key="test",
             cache_responses=True,
-            cache_ttl=3600
+            cache_ttl=3600,
         )
         client = LLMClient(config=config)
 
@@ -292,13 +296,10 @@ class TestCacheIntegration:
             total_tokens=30,
             cost_usd=0.0,
             provider="anthropic",
-            model="claude-3"
+            model="claude-3",
         )
         response = ChatResponse(
-            content="Response",
-            provider="anthropic",
-            model="claude-3",
-            usage=usage
+            content="Response", provider="anthropic", model="claude-3", usage=usage
         )
         mock_chat.return_value = response
 
@@ -307,7 +308,7 @@ class TestCacheIntegration:
             model="claude-3",
             api_key="test",
             cache_responses=True,
-            cache_ttl=3600
+            cache_ttl=3600,
         )
         client = LLMClient(config=config)
 
@@ -326,21 +327,15 @@ class TestCacheIntegration:
             total_tokens=30,
             cost_usd=0.0,
             provider="anthropic",
-            model="claude-3"
+            model="claude-3",
         )
         response = ChatResponse(
-            content="Response",
-            provider="anthropic",
-            model="claude-3",
-            usage=usage
+            content="Response", provider="anthropic", model="claude-3", usage=usage
         )
         mock_chat.return_value = response
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            cache_responses=False
+            provider="anthropic", model="claude-3", api_key="test", cache_responses=False
         )
         client = LLMClient(config=config)
 
@@ -358,6 +353,7 @@ class TestErrorHandling:
     def test_provider_error_propagates(self, mock_chat):
         """Test that provider errors propagate."""
         from socrates_nexus.exceptions import RateLimitError
+
         mock_chat.side_effect = RateLimitError("Rate limited")
 
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
@@ -387,8 +383,14 @@ class TestProviderLazyInitialization:
             content="Response",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(input_tokens=0, output_tokens=0, total_tokens=0,
-                           cost_usd=0.0, provider="anthropic", model="claude-3")
+            usage=TokenUsage(
+                input_tokens=0,
+                output_tokens=0,
+                total_tokens=0,
+                cost_usd=0.0,
+                provider="anthropic",
+                model="claude-3",
+            ),
         )
         mock_provider_class.return_value = mock_instance
 
@@ -402,6 +404,7 @@ class TestProviderLazyInitialization:
 
     def test_provider_callback_registered(self):
         """Test that usage callback is registered with provider."""
+
         # Create a mock provider to verify callback registration
         class MockProvider:
             def __init__(self, config):
@@ -416,7 +419,7 @@ class TestProviderLazyInitialization:
                     content="Test",
                     provider="test",
                     model="test-model",
-                    usage=TokenUsage(0, 0, 0, 0.0, "test", "test-model")
+                    usage=TokenUsage(0, 0, 0, 0.0, "test", "test-model"),
                 )
 
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")

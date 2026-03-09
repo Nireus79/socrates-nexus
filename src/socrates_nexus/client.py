@@ -149,9 +149,7 @@ class LLMClient:
 
         return response
 
-    def stream(
-        self, message: str, on_chunk: Callable[[str], None], **kwargs
-    ) -> ChatResponse:
+    def stream(self, message: str, on_chunk: Callable[[str], None], **kwargs) -> ChatResponse:
         """
         Stream a chat response with callback.
 

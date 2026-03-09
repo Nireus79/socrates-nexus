@@ -91,7 +91,11 @@ class TestSocratesNexusLLMCall:
                 provider="anthropic",
                 model="claude-opus",
                 usage=TokenUsage(
-                    provider="anthropic", model="claude-opus", input_tokens=5, output_tokens=10, total_tokens=15
+                    provider="anthropic",
+                    model="claude-opus",
+                    input_tokens=5,
+                    output_tokens=10,
+                    total_tokens=15,
                 ),
             )
 
@@ -110,7 +114,11 @@ class TestSocratesNexusLLMCall:
                 provider="anthropic",
                 model="claude-opus",
                 usage=TokenUsage(
-                    provider="anthropic", model="claude-opus", input_tokens=5, output_tokens=10, total_tokens=15
+                    provider="anthropic",
+                    model="claude-opus",
+                    input_tokens=5,
+                    output_tokens=10,
+                    total_tokens=15,
                 ),
             )
 
@@ -135,7 +143,11 @@ class TestSocratesNexusLLMCall:
                 provider="openai",
                 model="gpt-4",
                 usage=TokenUsage(
-                    provider="openai", model="gpt-4", input_tokens=5, output_tokens=10, total_tokens=15
+                    provider="openai",
+                    model="gpt-4",
+                    input_tokens=5,
+                    output_tokens=10,
+                    total_tokens=15,
                 ),
             )
 
@@ -310,7 +322,11 @@ class TestSocratesNexusLLMCallbackManager:
                 provider="anthropic",
                 model="claude-opus",
                 usage=TokenUsage(
-                    provider="anthropic", model="claude-opus", input_tokens=5, output_tokens=10, total_tokens=15
+                    provider="anthropic",
+                    model="claude-opus",
+                    input_tokens=5,
+                    output_tokens=10,
+                    total_tokens=15,
                 ),
             )
 
@@ -364,7 +380,11 @@ class TestSocratesNexusLLMEdgeCases:
                 provider="anthropic",
                 model="claude-opus",
                 usage=TokenUsage(
-                    provider="anthropic", model="claude-opus", input_tokens=0, output_tokens=5, total_tokens=5
+                    provider="anthropic",
+                    model="claude-opus",
+                    input_tokens=0,
+                    output_tokens=5,
+                    total_tokens=5,
                 ),
             )
 
@@ -384,7 +404,11 @@ class TestSocratesNexusLLMEdgeCases:
                 provider="anthropic",
                 model="claude-opus",
                 usage=TokenUsage(
-                    provider="anthropic", model="claude-opus", input_tokens=5000, output_tokens=5, total_tokens=5005
+                    provider="anthropic",
+                    model="claude-opus",
+                    input_tokens=5000,
+                    output_tokens=5,
+                    total_tokens=5005,
                 ),
             )
 
@@ -404,7 +428,11 @@ class TestSocratesNexusLLMEdgeCases:
                 provider="anthropic",
                 model="claude-opus",
                 usage=TokenUsage(
-                    provider="anthropic", model="claude-opus", input_tokens=10, output_tokens=5, total_tokens=15
+                    provider="anthropic",
+                    model="claude-opus",
+                    input_tokens=10,
+                    output_tokens=5,
+                    total_tokens=15,
                 ),
             )
 

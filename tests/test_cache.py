@@ -6,6 +6,7 @@ from socrates_nexus.utils.cache import TTLCache
 
 def test_ttl_cache_decorator_initialization():
     """Test TTLCache decorator initialization."""
+
     @TTLCache(ttl_minutes=5)
     def expensive_function(x):
         return x * 2
@@ -111,6 +112,7 @@ def test_ttl_cache_different_kwargs():
 
 def test_ttl_cache_return_types():
     """Test caching with different return types."""
+
     @TTLCache(ttl_minutes=5)
     def return_dict(x):
         return {"value": x * 2}
@@ -143,12 +145,13 @@ def test_ttl_cache_with_none():
 
 def test_ttl_cache_preserves_function_name():
     """Test that decorator preserves function name."""
+
     @TTLCache(ttl_minutes=5)
     def my_function():
         return 42
 
     # Should preserve function metadata
-    assert hasattr(my_function, '__wrapped__') or callable(my_function)
+    assert hasattr(my_function, "__wrapped__") or callable(my_function)
 
 
 def test_ttl_cache_thread_safety():
@@ -184,6 +187,7 @@ def test_ttl_cache_thread_safety():
 
 def test_ttl_cache_hit_miss_stats():
     """Test cache hit/miss statistics."""
+
     @TTLCache(ttl_minutes=5)
     def expensive_function(x):
         return x * 2
@@ -194,4 +198,4 @@ def test_ttl_cache_hit_miss_stats():
     expensive_function(5)  # Hit
 
     # Cache should have stats
-    assert hasattr(expensive_function, '__wrapped__') or callable(expensive_function)
+    assert hasattr(expensive_function, "__wrapped__") or callable(expensive_function)

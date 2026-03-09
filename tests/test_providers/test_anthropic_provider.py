@@ -29,9 +29,7 @@ class TestAnthropicProviderInitialization:
     def test_initialization_with_api_key(self):
         """Test provider initializes with API key."""
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test-key"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test-key"
         )
         provider = AnthropicProvider(config)
 
@@ -41,22 +39,14 @@ class TestAnthropicProviderInitialization:
 
     def test_initialization_without_api_key_raises_error(self):
         """Test initialization fails without API key."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key=None
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022", api_key=None)
 
         with pytest.raises(AuthenticationError):
             AnthropicProvider(config)
 
     def test_initialization_with_empty_api_key_raises_error(self):
         """Test initialization fails with empty API key."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key=""
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="")
 
         with pytest.raises(AuthenticationError):
             AnthropicProvider(config)
@@ -72,9 +62,7 @@ class TestAnthropicClientLazyInitialization:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -97,9 +85,7 @@ class TestAnthropicClientLazyInitialization:
         mock_anthropic_class.side_effect = ImportError("No module named 'anthropic'")
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -115,9 +101,7 @@ class TestAnthropicClientLazyInitialization:
         mock_async_class.return_value = mock_async_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -159,7 +143,7 @@ class TestAnthropicChat:
             model="claude-3-5-sonnet-20241022",
             api_key="sk-ant-test",
             temperature=0.7,
-            max_tokens=1024
+            max_tokens=1024,
         )
         provider = AnthropicProvider(config)
 
@@ -189,9 +173,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -216,9 +198,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -245,7 +225,7 @@ class TestAnthropicChat:
             provider="anthropic",
             model="claude-3-5-sonnet-20241022",
             api_key="sk-ant-test",
-            max_tokens=2048
+            max_tokens=2048,
         )
         provider = AnthropicProvider(config)
 
@@ -272,7 +252,7 @@ class TestAnthropicChat:
             provider="anthropic",
             model="claude-3-5-sonnet-20241022",
             api_key="sk-ant-test",
-            max_tokens=None
+            max_tokens=None,
         )
         provider = AnthropicProvider(config)
 
@@ -296,9 +276,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -328,9 +306,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -346,9 +322,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -363,9 +337,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-invalid"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-invalid"
         )
         provider = AnthropicProvider(config)
 
@@ -380,9 +352,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -399,9 +369,7 @@ class TestAnthropicChat:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -428,9 +396,7 @@ class TestAnthropicAsyncChat:
         mock_async_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -467,13 +433,12 @@ class TestAnthropicStream:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
         chunks = []
+
         def on_chunk(chunk):
             chunks.append(chunk)
 
@@ -507,9 +472,7 @@ class TestAnthropicStream:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -534,14 +497,12 @@ class TestAnthropicAsyncStream:
         # Full async streaming testing recommended with integration tests (marked with requires_api)
         # This test verifies the method exists and can be called
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
         # Verify method exists and is callable
-        assert hasattr(provider, 'astream')
+        assert hasattr(provider, "astream")
         assert callable(provider.astream)
 
 
@@ -556,9 +517,7 @@ class TestAnthropicErrorHandling:
         mock_anthropic_class.return_value = mock_client
 
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 
@@ -574,9 +533,7 @@ class TestAnthropicProviderRepresentation:
     def test_repr(self):
         """Test provider representation."""
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="sk-ant-test"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="sk-ant-test"
         )
         provider = AnthropicProvider(config)
 

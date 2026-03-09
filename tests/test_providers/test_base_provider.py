@@ -42,9 +42,7 @@ class TestBaseProviderInitialization:
     def test_initialization_with_anthropic_config(self):
         """Test provider initializes with Anthropic config."""
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022",
-            api_key="test-key"
+            provider="anthropic", model="claude-3-5-sonnet-20241022", api_key="test-key"
         )
         provider = ConcreteProvider(config)
 
@@ -55,11 +53,7 @@ class TestBaseProviderInitialization:
 
     def test_initialization_with_openai_config(self):
         """Test provider initializes with OpenAI config."""
-        config = LLMConfig(
-            provider="openai",
-            model="gpt-4",
-            api_key="test-key"
-        )
+        config = LLMConfig(provider="openai", model="gpt-4", api_key="test-key")
         provider = ConcreteProvider(config)
 
         assert provider.config.provider == "openai"
@@ -67,11 +61,7 @@ class TestBaseProviderInitialization:
 
     def test_initialization_with_google_config(self):
         """Test provider initializes with Google config."""
-        config = LLMConfig(
-            provider="google",
-            model="gemini-1.5-pro",
-            api_key="test-key"
-        )
+        config = LLMConfig(provider="google", model="gemini-1.5-pro", api_key="test-key")
         provider = ConcreteProvider(config)
 
         assert provider.config.provider == "google"
@@ -79,11 +69,7 @@ class TestBaseProviderInitialization:
 
     def test_initialization_with_ollama_config(self):
         """Test provider initializes with Ollama config (local)."""
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = ConcreteProvider(config)
 
         assert provider.config.provider == "ollama"
@@ -91,10 +77,7 @@ class TestBaseProviderInitialization:
 
     def test_initialization_with_unknown_provider(self):
         """Test provider initializes with unknown provider (empty pricing)."""
-        config = LLMConfig(
-            provider="unknown",
-            model="some-model"
-        )
+        config = LLMConfig(provider="unknown", model="some-model")
         provider = ConcreteProvider(config)
 
         assert provider.pricing == {}
@@ -105,10 +88,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_anthropic_haiku(self):
         """Test cost calculation for Anthropic Claude Haiku."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-haiku-4-5-20251001"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-haiku-4-5-20251001")
         provider = ConcreteProvider(config)
 
         # Haiku: $0.80 / 1M input, $4.00 / 1M output
@@ -117,10 +97,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_anthropic_sonnet(self):
         """Test cost calculation for Anthropic Claude Sonnet."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
         # Sonnet: $3.00 / 1M input, $15.00 / 1M output
@@ -129,10 +106,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_anthropic_opus(self):
         """Test cost calculation for Anthropic Claude Opus."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-opus-4-20250514"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-opus-4-20250514")
         provider = ConcreteProvider(config)
 
         # Opus: $15.00 / 1M input, $75.00 / 1M output
@@ -141,10 +115,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_openai_gpt4(self):
         """Test cost calculation for OpenAI GPT-4."""
-        config = LLMConfig(
-            provider="openai",
-            model="gpt-4"
-        )
+        config = LLMConfig(provider="openai", model="gpt-4")
         provider = ConcreteProvider(config)
 
         # GPT-4: $30.00 / 1M input, $60.00 / 1M output
@@ -153,10 +124,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_google_gemini_pro(self):
         """Test cost calculation for Google Gemini Pro."""
-        config = LLMConfig(
-            provider="google",
-            model="gemini-1.5-pro"
-        )
+        config = LLMConfig(provider="google", model="gemini-1.5-pro")
         provider = ConcreteProvider(config)
 
         # Gemini Pro: $1.25 / 1M input, $5.00 / 1M output
@@ -165,10 +133,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_ollama_free(self):
         """Test cost calculation for Ollama (local, free)."""
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2"
-        )
+        config = LLMConfig(provider="ollama", model="llama2")
         provider = ConcreteProvider(config)
 
         # Ollama is free
@@ -177,26 +142,18 @@ class TestCostCalculation:
 
     def test_calculate_cost_with_custom_model(self):
         """Test cost calculation with explicit model parameter."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
         # Calculate cost for different model than config
         cost = provider.calculate_cost(
-            input_tokens=1_000_000,
-            output_tokens=1_000_000,
-            model="claude-haiku-4-5-20251001"
+            input_tokens=1_000_000, output_tokens=1_000_000, model="claude-haiku-4-5-20251001"
         )
         assert cost == 4.80  # Haiku pricing, not Sonnet
 
     def test_calculate_cost_zero_tokens(self):
         """Test cost calculation with zero tokens."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
         cost = provider.calculate_cost(input_tokens=0, output_tokens=0)
@@ -204,10 +161,7 @@ class TestCostCalculation:
 
     def test_calculate_cost_unknown_model(self):
         """Test cost calculation for unknown model (should return 0)."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="unknown-model"
-        )
+        config = LLMConfig(provider="anthropic", model="unknown-model")
         provider = ConcreteProvider(config)
 
         cost = provider.calculate_cost(input_tokens=1_000_000, output_tokens=1_000_000)
@@ -257,7 +211,7 @@ class TestUsageCallbacks:
             total_tokens=150,
             cost_usd=0.001,
             provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
+            model="claude-3-5-sonnet-20241022",
         )
 
         provider._notify_usage(usage)
@@ -283,7 +237,7 @@ class TestUsageCallbacks:
             total_tokens=150,
             cost_usd=0.001,
             provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
+            model="claude-3-5-sonnet-20241022",
         )
 
         provider._notify_usage(usage)
@@ -311,7 +265,7 @@ class TestUsageCallbacks:
             total_tokens=150,
             cost_usd=0.001,
             provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
+            model="claude-3-5-sonnet-20241022",
         )
 
         # Should not raise exception
@@ -333,7 +287,7 @@ class TestUsageCallbacks:
             total_tokens=150,
             cost_usd=0.001,
             provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
+            model="claude-3-5-sonnet-20241022",
         )
 
         # Should not raise exception
@@ -404,16 +358,10 @@ class TestCreateTokenUsage:
 
     def test_create_token_usage_basic(self):
         """Test creating TokenUsage with basic values."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
-        usage = provider._create_token_usage(
-            input_tokens=100,
-            output_tokens=50
-        )
+        usage = provider._create_token_usage(input_tokens=100, output_tokens=50)
 
         assert usage.input_tokens == 100
         assert usage.output_tokens == 50
@@ -425,79 +373,48 @@ class TestCreateTokenUsage:
 
     def test_create_token_usage_with_latency(self):
         """Test creating TokenUsage with latency measurement."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
-        usage = provider._create_token_usage(
-            input_tokens=100,
-            output_tokens=50,
-            latency_ms=1234.5
-        )
+        usage = provider._create_token_usage(input_tokens=100, output_tokens=50, latency_ms=1234.5)
 
         assert usage.latency_ms == 1234.5
 
     def test_create_token_usage_cost_calculation(self):
         """Test that TokenUsage correctly calculates cost."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-haiku-4-5-20251001"  # $0.80 / $4.00
-        )
+        config = LLMConfig(provider="anthropic", model="claude-haiku-4-5-20251001")  # $0.80 / $4.00
         provider = ConcreteProvider(config)
 
-        usage = provider._create_token_usage(
-            input_tokens=1_000_000,
-            output_tokens=1_000_000
-        )
+        usage = provider._create_token_usage(input_tokens=1_000_000, output_tokens=1_000_000)
 
         # Cost should be $0.80 + $4.00 = $4.80
         assert usage.cost_usd == 4.80
 
     def test_create_token_usage_ollama_free(self):
         """Test that Ollama TokenUsage has zero cost."""
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2"
-        )
+        config = LLMConfig(provider="ollama", model="llama2")
         provider = ConcreteProvider(config)
 
-        usage = provider._create_token_usage(
-            input_tokens=100_000,
-            output_tokens=100_000
-        )
+        usage = provider._create_token_usage(input_tokens=100_000, output_tokens=100_000)
 
         assert usage.cost_usd == 0.0
 
     def test_create_token_usage_zero_tokens(self):
         """Test creating TokenUsage with zero tokens."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
-        usage = provider._create_token_usage(
-            input_tokens=0,
-            output_tokens=0
-        )
+        usage = provider._create_token_usage(input_tokens=0, output_tokens=0)
 
         assert usage.total_tokens == 0
         assert usage.cost_usd == 0.0
 
     def test_create_token_usage_has_timestamp(self):
         """Test that TokenUsage includes timestamp."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
-        usage = provider._create_token_usage(
-            input_tokens=100,
-            output_tokens=50
-        )
+        usage = provider._create_token_usage(input_tokens=100, output_tokens=50)
 
         assert usage.timestamp is not None
 
@@ -592,14 +509,12 @@ class TestIntegrationCostWithCallbacks:
 
     def test_create_usage_and_notify_callbacks(self):
         """Test creating TokenUsage and notifying callbacks."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3-5-sonnet-20241022"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3-5-sonnet-20241022")
         provider = ConcreteProvider(config)
 
         # Add callback to track usage
         received_usages = []
+
         def track_usage(usage):
             received_usages.append(usage)
 
@@ -616,10 +531,7 @@ class TestIntegrationCostWithCallbacks:
 
     def test_multiple_usages_accumulate(self):
         """Test that multiple usages accumulate correctly."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-haiku-4-5-20251001"
-        )
+        config = LLMConfig(provider="anthropic", model="claude-haiku-4-5-20251001")
         provider = ConcreteProvider(config)
 
         total_cost = 0.0

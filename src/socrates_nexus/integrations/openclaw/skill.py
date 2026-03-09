@@ -133,8 +133,4 @@ class NexusLLMSkill:
         self.client.add_usage_callback(callback)
 
     def __repr__(self) -> str:
-        return (
-            f"NexusLLMSkill("
-            f"provider={self.config.provider}, "
-            f"model={self.config.model})"
-        )
+        return f"NexusLLMSkill(" f"provider={self.config.provider}, " f"model={self.config.model})"

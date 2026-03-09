@@ -12,16 +12,20 @@ from typing import Any, List, Optional
 try:
     from langchain.llms.base import LLM
     from langchain.callbacks.manager import CallbackManagerForLLMRun
+
     HAS_LANGCHAIN = True
 except ImportError:
     HAS_LANGCHAIN = False
+
     # Create dummy base classes for type checking
     class LLM:  # type: ignore
         def __init__(self, **kwargs):  # type: ignore
             for key, value in kwargs.items():
                 setattr(self, key, value)
+
     class CallbackManagerForLLMRun:  # type: ignore
         pass
+
 
 from socrates_nexus import LLMClient, LLMConfig
 

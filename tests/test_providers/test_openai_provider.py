@@ -17,11 +17,7 @@ class TestOpenAIInitialization:
 
     def test_initialization_with_api_key(self):
         """Test provider initializes with API key."""
-        config = LLMConfig(
-            provider="openai",
-            model="gpt-4",
-            api_key="sk-test-key"
-        )
+        config = LLMConfig(provider="openai", model="gpt-4", api_key="sk-test-key")
         provider = OpenAIProvider(config)
         assert provider.config == config
         assert provider._client is None
@@ -212,7 +208,11 @@ class TestOpenAIStreaming:
             Mock(choices=[Mock(delta=Mock(content="Hello"))], usage=None),
             Mock(choices=[Mock(delta=Mock(content=" "))], usage=None),
             Mock(choices=[Mock(delta=Mock(content="stream"))], usage=None),
-            Mock(choices=[Mock(delta=Mock(content="!"))], finish_reason="stop", usage=Mock(prompt_tokens=10, completion_tokens=20)),
+            Mock(
+                choices=[Mock(delta=Mock(content="!"))],
+                finish_reason="stop",
+                usage=Mock(prompt_tokens=10, completion_tokens=20),
+            ),
         ]
 
         # Create a proper context manager for the stream
@@ -228,6 +228,7 @@ class TestOpenAIStreaming:
         provider = OpenAIProvider(config)
 
         callback_chunks = []
+
         def on_chunk(chunk):
             callback_chunks.append(chunk)
 

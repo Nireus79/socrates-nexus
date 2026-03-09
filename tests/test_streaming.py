@@ -140,7 +140,7 @@ class TestStreamHandler:
         """Test handling special characters."""
         handler = StreamHandler()
         handler.handle_chunk("Tab:\t")
-        handler.handle_chunk("Quote:\"")
+        handler.handle_chunk('Quote:"')
         handler.handle_chunk("Backslash:\\")
         expected = 'Tab:\tQuote:"Backslash:\\'
         assert handler.get_complete_response() == expected
@@ -391,9 +391,9 @@ class TestStreamingEdgeCases:
     def test_stream_handler_repr(self):
         """Test that handler is instantiable and usable."""
         handler = StreamHandler()
-        assert hasattr(handler, 'on_chunk')
-        assert hasattr(handler, 'chunks')
-        assert hasattr(handler, 'complete')
+        assert hasattr(handler, "on_chunk")
+        assert hasattr(handler, "chunks")
+        assert hasattr(handler, "complete")
 
     @pytest.mark.asyncio
     async def test_concurrent_chunk_handling(self):

@@ -68,7 +68,9 @@ class OpenAIProvider(BaseProvider):
 
         return self._async_client
 
-    @retry_with_backoff(max_attempts=3, backoff_factor=2.0, initial_delay=1.0, max_delay=32.0, jitter=True)
+    @retry_with_backoff(
+        max_attempts=3, backoff_factor=2.0, initial_delay=1.0, max_delay=32.0, jitter=True
+    )
     def chat(self, message: str, **kwargs) -> ChatResponse:
         """
         Send a chat message to OpenAI and get response.
@@ -243,7 +245,9 @@ class OpenAIProvider(BaseProvider):
         except Exception as e:
             self._handle_openai_error(e, "stream")
 
-    async def astream(self, message: str, on_chunk: Callable[[str], None], **kwargs) -> ChatResponse:
+    async def astream(
+        self, message: str, on_chunk: Callable[[str], None], **kwargs
+    ) -> ChatResponse:
         """
         Async version of stream.
 

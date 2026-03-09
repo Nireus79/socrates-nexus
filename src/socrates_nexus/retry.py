@@ -41,7 +41,7 @@ def exponential_backoff(attempt: int, config: RetryConfig) -> float:
     Returns:
         Delay in seconds
     """
-    delay = config.base_delay * (config.exponential_base ** attempt)
+    delay = config.base_delay * (config.exponential_base**attempt)
     delay = min(delay, config.max_delay)
 
     if config.jitter:

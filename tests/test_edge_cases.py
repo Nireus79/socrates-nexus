@@ -16,111 +16,60 @@ class TestConfigurationValidation:
 
     def test_temperature_below_zero_allowed(self):
         """Test that temperature below 0 is accepted (some models allow it)."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            temperature=-0.5
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", temperature=-0.5)
         assert config.temperature == -0.5
 
     def test_temperature_above_two_allowed(self):
         """Test that temperature above 2.0 is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            temperature=2.5
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", temperature=2.5)
         assert config.temperature == 2.5
 
     def test_top_p_zero_allowed(self):
         """Test that top_p of 0 is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            top_p=0.0
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", top_p=0.0)
         assert config.top_p == 0.0
 
     def test_top_p_one_allowed(self):
         """Test that top_p of 1.0 is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            top_p=1.0
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", top_p=1.0)
         assert config.top_p == 1.0
 
     def test_max_tokens_zero(self):
         """Test that max_tokens of 0 is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            max_tokens=0
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", max_tokens=0)
         assert config.max_tokens == 0
 
     def test_max_tokens_very_large(self):
         """Test that very large max_tokens is accepted."""
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            max_tokens=1_000_000
+            provider="anthropic", model="claude-3", api_key="test", max_tokens=1_000_000
         )
         assert config.max_tokens == 1_000_000
 
     def test_negative_max_tokens_allowed(self):
         """Test that negative max_tokens is accepted (validation deferred to provider)."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            max_tokens=-1
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", max_tokens=-1)
         assert config.max_tokens == -1
 
     def test_cache_ttl_zero(self):
         """Test that cache TTL of 0 is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            cache_ttl=0
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", cache_ttl=0)
         assert config.cache_ttl == 0
 
     def test_cache_ttl_negative_allowed(self):
         """Test that negative cache TTL is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            cache_ttl=-1
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", cache_ttl=-1)
         assert config.cache_ttl == -1
 
     def test_retry_attempts_zero(self):
         """Test that retry attempts of 0 is accepted."""
-        config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            retry_attempts=0
-        )
+        config = LLMConfig(provider="anthropic", model="claude-3", api_key="test", retry_attempts=0)
         assert config.retry_attempts == 0
 
     def test_retry_attempts_very_high(self):
         """Test that very high retry attempts is accepted."""
         config = LLMConfig(
-            provider="anthropic",
-            model="claude-3",
-            api_key="test",
-            retry_attempts=1000
+            provider="anthropic", model="claude-3", api_key="test", retry_attempts=1000
         )
         assert config.retry_attempts == 1000
 
@@ -135,7 +84,7 @@ class TestMessageValidation:
             content="Response",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("")
@@ -148,7 +97,7 @@ class TestMessageValidation:
             content="OK",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(10000, 1, 10001, 1.0, "anthropic", "claude-3")
+            usage=TokenUsage(10000, 1, 10001, 1.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         long_message = "x" * 100_000
@@ -162,7 +111,7 @@ class TestMessageValidation:
             content="OK",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(10, 1, 11, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(10, 1, 11, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("你好世界 🌍 مرحبا")
@@ -175,7 +124,7 @@ class TestMessageValidation:
             content="OK",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("Test\n\t\r\x00")
@@ -189,6 +138,7 @@ class TestNetworkAndTimeout:
     def test_connection_timeout(self, mock_chat):
         """Test handling connection timeout."""
         from socket import timeout
+
         mock_chat.side_effect = timeout("Connection timed out")
 
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
@@ -199,6 +149,7 @@ class TestNetworkAndTimeout:
     def test_connection_refused(self, mock_chat):
         """Test handling connection refused."""
         from socket import error as socket_error
+
         mock_chat.side_effect = socket_error("Connection refused")
 
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
@@ -225,7 +176,7 @@ class TestMalformedResponses:
             content=None,
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("Hello")
@@ -238,7 +189,7 @@ class TestMalformedResponses:
             content="",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("Hello")
@@ -248,10 +199,7 @@ class TestMalformedResponses:
     def test_response_with_missing_usage(self, mock_chat):
         """Test handling response with None usage."""
         mock_chat.return_value = ChatResponse(
-            content="Hello",
-            provider="anthropic",
-            model="claude-3",
-            usage=None
+            content="Hello", provider="anthropic", model="claude-3", usage=None
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("Hello")
@@ -305,7 +253,7 @@ class TestTokenUsageEdgeCases:
             total_tokens=0,
             cost_usd=0.0,
             provider="test",
-            model="test"
+            model="test",
         )
         assert usage.total_tokens == 0
         assert usage.cost_usd == 0.0
@@ -318,7 +266,7 @@ class TestTokenUsageEdgeCases:
             total_tokens=-30,
             cost_usd=-0.001,
             provider="test",
-            model="test"
+            model="test",
         )
         assert usage.input_tokens == -10
         assert usage.cost_usd == -0.001
@@ -331,7 +279,7 @@ class TestTokenUsageEdgeCases:
             total_tokens=15_000_000,
             cost_usd=150.0,
             provider="test",
-            model="test"
+            model="test",
         )
         assert usage.total_tokens == 15_000_000
         assert usage.cost_usd == 150.0
@@ -347,7 +295,7 @@ class TestCacheEdgeCases:
             model="claude-3",
             api_key="test",
             cache_responses=True,
-            cache_ttl=0
+            cache_ttl=0,
         )
         client = LLMClient(config=config)
         assert client._cache is not None
@@ -359,7 +307,7 @@ class TestCacheEdgeCases:
             model="claude-3",
             api_key="test",
             cache_responses=False,
-            cache_ttl=3600
+            cache_ttl=3600,
         )
         client = LLMClient(config=config)
         assert client._cache is None
@@ -371,14 +319,14 @@ class TestCacheEdgeCases:
             content="Response",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         config = LLMConfig(
             provider="anthropic",
             model="claude-3",
             api_key="test",
             cache_responses=True,
-            cache_ttl=3600
+            cache_ttl=3600,
         )
         client = LLMClient(config=config)
 
@@ -414,7 +362,7 @@ class TestConcurrentRequests:
                 content=f"Response {i}",
                 provider="anthropic",
                 model="claude-3",
-                usage=TokenUsage(1, 1, 2, 0.0, "anthropic", "claude-3")
+                usage=TokenUsage(1, 1, 2, 0.0, "anthropic", "claude-3"),
             )
             for i in range(5)
         ]
@@ -435,8 +383,8 @@ class TestConcurrentRequests:
                 content="Success",
                 provider="anthropic",
                 model="claude-3",
-                usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
-            )
+                usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
+            ),
         ]
 
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
@@ -458,16 +406,12 @@ class TestParameterEdgeCases:
             content="OK",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
 
         response = client.chat(
-            "Message",
-            temperature=0.5,
-            top_p=0.9,
-            max_tokens=100,
-            custom_param="custom_value"
+            "Message", temperature=0.5, top_p=0.9, max_tokens=100, custom_param="custom_value"
         )
         assert response.content == "OK"
 
@@ -478,7 +422,7 @@ class TestParameterEdgeCases:
             content="OK",
             provider="anthropic",
             model="claude-3",
-            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3")
+            usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3"),
         )
         client = LLMClient(provider="anthropic", model="claude-3", api_key="test")
         response = client.chat("Message")

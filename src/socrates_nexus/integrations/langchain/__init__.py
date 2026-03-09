@@ -9,6 +9,7 @@ Installation:
 
 try:
     from .llm import SocratesNexusLLM
+
     __all__ = ["SocratesNexusLLM"]
 except ImportError as e:
     if "langchain" in str(e):

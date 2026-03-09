@@ -77,37 +77,25 @@ class TestImageContent:
 
     def test_image_content_creation(self):
         """Test creating ImageContent."""
-        content = ImageContent(
-            source="https://example.com/image.jpg",
-            media_type="image/jpeg"
-        )
+        content = ImageContent(source="https://example.com/image.jpg", media_type="image/jpeg")
         assert content.type == "image"
         assert content.source == "https://example.com/image.jpg"
         assert content.media_type == "image/jpeg"
 
     def test_image_content_with_file_path(self):
         """Test ImageContent with file path."""
-        content = ImageContent(
-            source="/path/to/image.png",
-            media_type="image/png"
-        )
+        content = ImageContent(source="/path/to/image.png", media_type="image/png")
         assert content.source == "/path/to/image.png"
 
     def test_image_content_with_base64(self):
         """Test ImageContent with base64 data."""
         base64_data = "iVBORw0KGgoAAAANSUhEUg="
-        content = ImageContent(
-            source=base64_data,
-            media_type="image/png"
-        )
+        content = ImageContent(source=base64_data, media_type="image/png")
         assert content.source == base64_data
 
     def test_image_content_with_detail(self):
         """Test ImageContent with detail level."""
-        content = ImageContent(
-            source="https://example.com/image.jpg",
-            detail="high"
-        )
+        content = ImageContent(source="https://example.com/image.jpg", detail="high")
         assert content.detail == "high"
 
 
@@ -136,20 +124,13 @@ class TestVisionSupport:
             content="The image shows a cat",
             provider="anthropic",
             model="claude-3-5-sonnet",
-            usage=TokenUsage(100, 20, 120, 0.001, "anthropic", "claude-3-5-sonnet")
+            usage=TokenUsage(100, 20, 120, 0.001, "anthropic", "claude-3-5-sonnet"),
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         # Simulate chat with image
-        response = client.chat(
-            "What's in this image?",
-            image_url="https://example.com/image.jpg"
-        )
+        response = client.chat("What's in this image?", image_url="https://example.com/image.jpg")
 
         assert response.content == "The image shows a cat"
 
@@ -160,18 +141,14 @@ class TestVisionSupport:
             content="Comparison complete",
             provider="anthropic",
             model="claude-3-5-sonnet",
-            usage=TokenUsage(150, 10, 160, 0.002, "anthropic", "claude-3-5-sonnet")
+            usage=TokenUsage(150, 10, 160, 0.002, "anthropic", "claude-3-5-sonnet"),
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         response = client.chat(
             "Compare these images",
-            images=["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+            images=["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
         )
 
         assert response.content == "Comparison complete"
@@ -183,18 +160,13 @@ class TestVisionSupport:
             content="Analysis complete",
             provider="anthropic",
             model="claude-3-5-sonnet",
-            usage=TokenUsage(200, 30, 230, 0.002, "anthropic", "claude-3-5-sonnet")
+            usage=TokenUsage(200, 30, 230, 0.002, "anthropic", "claude-3-5-sonnet"),
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         response = client.chat(
-            "Analyze this image and tell me what you see",
-            image="https://example.com/image.jpg"
+            "Analyze this image and tell me what you see", image="https://example.com/image.jpg"
         )
 
         assert response.content == "Analysis complete"
@@ -210,36 +182,22 @@ class TestFunctionCalling:
             description="Get weather for a location",
             parameters={
                 "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "City name"
-                    }
-                },
-                "required": ["location"]
-            }
+                "properties": {"location": {"type": "string", "description": "City name"}},
+                "required": ["location"],
+            },
         )
         assert func.name == "get_weather"
         assert "location" in func.parameters["properties"]
 
     def test_tool_definition_creation(self):
         """Test creating tool definition."""
-        tool = Tool(
-            function=Function(
-                name="get_weather",
-                description="Get weather",
-                parameters={}
-            )
-        )
+        tool = Tool(function=Function(name="get_weather", description="Get weather", parameters={}))
         assert tool.type == "function"
         assert tool.function.name == "get_weather"
 
     def test_function_call_creation(self):
         """Test creating function call."""
-        call = FunctionCall(
-            name="get_weather",
-            arguments='{"location": "New York"}'
-        )
+        call = FunctionCall(name="get_weather", arguments='{"location": "New York"}')
         assert call.name == "get_weather"
         assert "New York" in call.arguments
 
@@ -247,10 +205,7 @@ class TestFunctionCalling:
         """Test creating tool call."""
         tool_call = ToolCall(
             id="call_123",
-            function=FunctionCall(
-                name="get_weather",
-                arguments='{"location": "Paris"}'
-            )
+            function=FunctionCall(name="get_weather", arguments='{"location": "Paris"}'),
         )
         assert tool_call.id == "call_123"
         assert tool_call.function.name == "get_weather"
@@ -260,10 +215,7 @@ class TestFunctionCalling:
         """Test chat with function calling."""
         tool_call = ToolCall(
             id="call_123",
-            function=FunctionCall(
-                name="get_weather",
-                arguments='{"location": "New York"}'
-            )
+            function=FunctionCall(name="get_weather", arguments='{"location": "New York"}'),
         )
 
         mock_chat.return_value = ChatResponse(
@@ -271,34 +223,22 @@ class TestFunctionCalling:
             provider="anthropic",
             model="claude-3-5-sonnet",
             usage=TokenUsage(50, 25, 75, 0.001, "anthropic", "claude-3-5-sonnet"),
-            tool_calls=[tool_call]
+            tool_calls=[tool_call],
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         tools = [
             Tool(
                 function=Function(
                     name="get_weather",
                     description="Get weather for a location",
-                    parameters={
-                        "type": "object",
-                        "properties": {
-                            "location": {"type": "string"}
-                        }
-                    }
+                    parameters={"type": "object", "properties": {"location": {"type": "string"}}},
                 )
             )
         ]
 
-        response = client.chat(
-            "What's the weather in New York?",
-            tools=tools
-        )
+        response = client.chat("What's the weather in New York?", tools=tools)
 
         assert response.tool_calls is not None
         assert len(response.tool_calls) == 1
@@ -312,36 +252,29 @@ class TestFunctionCalling:
             provider="anthropic",
             model="claude-3-5-sonnet",
             usage=TokenUsage(100, 50, 150, 0.002, "anthropic", "claude-3-5-sonnet"),
-            tool_calls=[]
+            tool_calls=[],
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         tools = [
             Tool(
                 function=Function(
                     name="get_weather",
                     description="Get weather",
-                    parameters={"type": "object", "properties": {}}
+                    parameters={"type": "object", "properties": {}},
                 )
             ),
             Tool(
                 function=Function(
                     name="get_time",
                     description="Get current time",
-                    parameters={"type": "object", "properties": {}}
+                    parameters={"type": "object", "properties": {}},
                 )
             ),
         ]
 
-        response = client.chat(
-            "Get me weather and time",
-            tools=tools
-        )
+        response = client.chat("Get me weather and time", tools=tools)
 
         assert response.tool_calls is not None
 
@@ -353,30 +286,16 @@ class TestFunctionCalling:
             provider="anthropic",
             model="claude-3-5-sonnet",
             usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3-5-sonnet"),
-            tool_calls=[]
+            tool_calls=[],
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         tools = [
-            Tool(
-                function=Function(
-                    name="test",
-                    description="Test",
-                    parameters={"type": "object"}
-                )
-            )
+            Tool(function=Function(name="test", description="Test", parameters={"type": "object"}))
         ]
 
-        response = client.chat(
-            "Test",
-            tools=tools,
-            tool_choice="auto"
-        )
+        response = client.chat("Test", tools=tools, tool_choice="auto")
 
         assert response is not None
 
@@ -388,30 +307,16 @@ class TestFunctionCalling:
             provider="anthropic",
             model="claude-3-5-sonnet",
             usage=TokenUsage(0, 0, 0, 0.0, "anthropic", "claude-3-5-sonnet"),
-            tool_calls=None
+            tool_calls=None,
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         tools = [
-            Tool(
-                function=Function(
-                    name="test",
-                    description="Test",
-                    parameters={"type": "object"}
-                )
-            )
+            Tool(function=Function(name="test", description="Test", parameters={"type": "object"}))
         ]
 
-        response = client.chat(
-            "Test",
-            tools=tools,
-            tool_choice="none"
-        )
+        response = client.chat("Test", tools=tools, tool_choice="none")
 
         assert response.tool_calls is None
 
@@ -424,10 +329,7 @@ class TestVisionAndFunctionsCombined:
         """Test combining vision and function calling."""
         tool_call = ToolCall(
             id="call_123",
-            function=FunctionCall(
-                name="analyze_image",
-                arguments='{"aspect": "objects"}'
-            )
+            function=FunctionCall(name="analyze_image", arguments='{"aspect": "objects"}'),
         )
 
         mock_chat.return_value = ChatResponse(
@@ -435,29 +337,21 @@ class TestVisionAndFunctionsCombined:
             provider="anthropic",
             model="claude-3-5-sonnet",
             usage=TokenUsage(150, 50, 200, 0.002, "anthropic", "claude-3-5-sonnet"),
-            tool_calls=[tool_call]
+            tool_calls=[tool_call],
         )
 
-        client = LLMClient(
-            provider="anthropic",
-            model="claude-3-5-sonnet",
-            api_key="test"
-        )
+        client = LLMClient(provider="anthropic", model="claude-3-5-sonnet", api_key="test")
 
         tools = [
             Tool(
                 function=Function(
-                    name="analyze_image",
-                    description="Analyze image",
-                    parameters={"type": "object"}
+                    name="analyze_image", description="Analyze image", parameters={"type": "object"}
                 )
             )
         ]
 
         response = client.chat(
-            "Analyze this image for me",
-            image="https://example.com/image.jpg",
-            tools=tools
+            "Analyze this image for me", image="https://example.com/image.jpg", tools=tools
         )
 
         assert response.tool_calls is not None

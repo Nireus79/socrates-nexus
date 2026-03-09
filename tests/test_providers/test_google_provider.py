@@ -16,11 +16,7 @@ class TestGoogleInitialization:
 
     def test_initialization_with_api_key(self):
         """Test provider initializes with API key."""
-        config = LLMConfig(
-            provider="google",
-            model="gemini-1.5-pro",
-            api_key="test-key"
-        )
+        config = LLMConfig(provider="google", model="gemini-1.5-pro", api_key="test-key")
         provider = GoogleProvider(config)
         assert provider.config == config
 
@@ -64,21 +60,14 @@ class TestGoogleChat:
         """Test basic chat message."""
         mock_response = Mock()
         mock_response.text = "Hello Google!"
-        mock_response.usage_metadata = Mock(
-            prompt_character_count=10,
-            candidates_token_count=20
-        )
+        mock_response.usage_metadata = Mock(prompt_character_count=10, candidates_token_count=20)
         mock_response.candidates = [Mock(finish_reason=Mock(name="STOP"))]
 
         mock_model = Mock()
         mock_model.generate_content.return_value = mock_response
         mock_model_class.return_value = mock_model
 
-        config = LLMConfig(
-            provider="google",
-            model="gemini-1.5-pro",
-            api_key="test-key"
-        )
+        config = LLMConfig(provider="google", model="gemini-1.5-pro", api_key="test-key")
         provider = GoogleProvider(config)
 
         response = provider.chat("Hello!")
@@ -95,10 +84,7 @@ class TestGoogleChat:
         """Test chat with custom temperature."""
         mock_response = Mock()
         mock_response.text = "Response"
-        mock_response.usage_metadata = Mock(
-            prompt_character_count=5,
-            candidates_token_count=10
-        )
+        mock_response.usage_metadata = Mock(prompt_character_count=5, candidates_token_count=10)
         mock_response.candidates = [Mock(finish_reason=Mock(name="STOP"))]
 
         mock_model = Mock()
@@ -119,10 +105,7 @@ class TestGoogleChat:
         """Test chat invokes usage callbacks."""
         mock_response = Mock()
         mock_response.text = "Response"
-        mock_response.usage_metadata = Mock(
-            prompt_character_count=100,
-            candidates_token_count=50
-        )
+        mock_response.usage_metadata = Mock(prompt_character_count=100, candidates_token_count=50)
         mock_response.candidates = [Mock(finish_reason=Mock(name="STOP"))]
 
         mock_model = Mock()
@@ -153,10 +136,7 @@ class TestGoogleAsync:
         """Test basic async chat message."""
         mock_response = Mock()
         mock_response.text = "Hello async!"
-        mock_response.usage_metadata = Mock(
-            prompt_character_count=10,
-            candidates_token_count=20
-        )
+        mock_response.usage_metadata = Mock(prompt_character_count=10, candidates_token_count=20)
         mock_response.candidates = [Mock(finish_reason=Mock(name="STOP"))]
 
         mock_model = AsyncMock()

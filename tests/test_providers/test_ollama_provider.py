@@ -15,11 +15,7 @@ class TestOllamaInitialization:
 
     def test_initialization_with_base_url(self):
         """Test provider initializes with base URL."""
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
         assert provider.config == config
 
@@ -32,11 +28,7 @@ class TestOllamaInitialization:
 
     def test_initialization_with_custom_base_url(self):
         """Test initialization with custom base URL."""
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://192.168.1.100:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://192.168.1.100:11434")
         provider = OllamaProvider(config)
         assert provider.config.base_url == "http://192.168.1.100:11434"
 
@@ -46,16 +38,14 @@ class TestOllamaClientInitialization:
 
     @patch("ollama.AsyncClient")
     @patch("ollama.Client")
-    def test_client_property_initializes_on_first_access(self, mock_client_class, mock_async_client_class):
+    def test_client_property_initializes_on_first_access(
+        self, mock_client_class, mock_async_client_class
+    ):
         """Test client is created on first access."""
         mock_client = Mock()
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         assert provider._client is None
@@ -65,16 +55,14 @@ class TestOllamaClientInitialization:
 
     @patch("ollama.AsyncClient")
     @patch("ollama.Client")
-    def test_async_client_property_initializes_on_first_access(self, mock_client_class, mock_async_client_class):
+    def test_async_client_property_initializes_on_first_access(
+        self, mock_client_class, mock_async_client_class
+    ):
         """Test async client is created on first access."""
         mock_async_client = AsyncMock()
         mock_async_client_class.return_value = mock_async_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         assert provider._async_client is None
@@ -100,11 +88,7 @@ class TestOllamaChat:
         mock_client.chat.return_value = mock_response
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         response = provider.chat("Hello!")
@@ -129,11 +113,7 @@ class TestOllamaChat:
         mock_client.chat.return_value = mock_response
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         provider.chat("Message", temperature=0.2)
@@ -156,11 +136,7 @@ class TestOllamaChat:
         mock_client.chat.return_value = mock_response
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         callback = Mock()
@@ -187,11 +163,7 @@ class TestOllamaChat:
         mock_client.chat.return_value = mock_response
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         provider.chat("Message", top_p=0.8)
@@ -219,11 +191,7 @@ class TestOllamaAsync:
         mock_async_client.chat = AsyncMock(return_value=mock_response)
         mock_async_client_class.return_value = mock_async_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         response = await provider.achat("Hello!")
@@ -251,14 +219,11 @@ class TestOllamaStreaming:
         mock_client.chat.return_value = iter(chunks)
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         callback_chunks = []
+
         def on_chunk(chunk):
             callback_chunks.append(chunk)
 
@@ -280,11 +245,7 @@ class TestOllamaErrorHandling:
         mock_client.chat.side_effect = Exception("Connection refused")
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         with pytest.raises(ProviderError):
@@ -297,11 +258,7 @@ class TestOllamaErrorHandling:
         mock_client.chat.side_effect = Exception("Unknown error occurred")
         mock_client_class.return_value = mock_client
 
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
 
         with pytest.raises(ProviderError):
@@ -313,11 +270,7 @@ class TestOllamaRepresentation:
 
     def test_repr(self):
         """Test provider representation."""
-        config = LLMConfig(
-            provider="ollama",
-            model="llama2",
-            base_url="http://localhost:11434"
-        )
+        config = LLMConfig(provider="ollama", model="llama2", base_url="http://localhost:11434")
         provider = OllamaProvider(config)
         repr_str = repr(provider)
 

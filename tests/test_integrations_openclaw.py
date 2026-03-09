@@ -71,7 +71,7 @@ class TestNexusLLMSkillQuery:
                 usage=TokenUsage(
                     input_tokens=10,
                     output_tokens=20,
-                    total_tokens=10+20,
+                    total_tokens=10 + 20,
                     provider="anthropic",
                     model="claude-opus",
                 ),
@@ -95,7 +95,7 @@ class TestNexusLLMSkillQuery:
                 usage=TokenUsage(
                     input_tokens=5,
                     output_tokens=15,
-                    total_tokens=5+15,
+                    total_tokens=5 + 15,
                     provider="anthropic",
                     model="claude-opus",
                 ),
@@ -131,7 +131,7 @@ class TestNexusLLMSkillStreaming:
                 usage=TokenUsage(
                     input_tokens=5,
                     output_tokens=25,
-                    total_tokens=5+25,
+                    total_tokens=5 + 25,
                     provider="anthropic",
                     model="claude-opus",
                 ),
@@ -159,7 +159,7 @@ class TestNexusLLMSkillStreaming:
                 usage=TokenUsage(
                     input_tokens=5,
                     output_tokens=15,
-                    total_tokens=5+15,
+                    total_tokens=5 + 15,
                     provider="anthropic",
                     model="claude-opus",
                 ),
@@ -361,7 +361,7 @@ class TestNexusLLMSkillEdgeCases:
                 usage=TokenUsage(
                     input_tokens=5,
                     output_tokens=0,
-                    total_tokens=5+0,
+                    total_tokens=5 + 0,
                     provider="anthropic",
                     model="claude-opus",
                 ),
@@ -383,7 +383,7 @@ class TestNexusLLMSkillEdgeCases:
                 usage=TokenUsage(
                     input_tokens=5,
                     output_tokens=5000,
-                    total_tokens=5+5000,
+                    total_tokens=5 + 5000,
                     provider="anthropic",
                     model="claude-opus",
                 ),
@@ -404,7 +404,7 @@ class TestNexusLLMSkillEdgeCases:
                 usage=TokenUsage(
                     input_tokens=0,
                     output_tokens=0,
-                    total_tokens=0+0,
+                    total_tokens=0 + 0,
                     provider="anthropic",
                     model="claude-opus",
                 ),
