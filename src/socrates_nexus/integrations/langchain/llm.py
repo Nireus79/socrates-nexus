@@ -15,8 +15,10 @@ try:
     HAS_LANGCHAIN = True
 except ImportError:
     HAS_LANGCHAIN = False
-    # Create dummy base class for type checking
+    # Create dummy base classes for type checking
     class LLM:  # type: ignore
+        pass
+    class CallbackManagerForLLMRun:  # type: ignore
         pass
 
 from socrates_nexus import LLMClient, LLMConfig
