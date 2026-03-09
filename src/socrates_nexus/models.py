@@ -1,6 +1,6 @@
 """Data models for Socrates Nexus."""
 
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union, Literal
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -56,6 +56,58 @@ class TokenUsage:
 
 
 @dataclass
+class TextContent:
+    """Text content block for multimodal messages."""
+
+    type: Literal["text"] = "text"
+    text: str = ""
+
+
+@dataclass
+class ImageContent:
+    """Image content for vision models."""
+
+    type: Literal["image"] = "image"
+    source: Union[str, bytes] = ""  # URL, file path, or base64
+    media_type: Optional[str] = None  # "image/jpeg", "image/png", etc.
+    detail: Optional[str] = None  # "low", "high" for OpenAI
+
+
+@dataclass
+class FunctionCall:
+    """Function call details."""
+
+    name: str
+    arguments: str  # JSON string of arguments
+
+
+@dataclass
+class ToolCall:
+    """Tool call made by the LLM."""
+
+    id: str
+    type: Literal["function"] = "function"
+    function: FunctionCall = field(default_factory=lambda: FunctionCall("", ""))
+
+
+@dataclass
+class Function:
+    """Function definition for LLM tool use."""
+
+    name: str
+    description: str
+    parameters: Dict[str, Any]  # JSON Schema format
+
+
+@dataclass
+class Tool:
+    """Tool definition (provider-agnostic)."""
+
+    type: Literal["function"] = "function"
+    function: Function = field(default_factory=lambda: Function("", "", {}))
+
+
+@dataclass
 class ChatResponse:
     """Unified chat response from any LLM provider."""
 
@@ -65,6 +117,8 @@ class ChatResponse:
     usage: TokenUsage
     finish_reason: Optional[str] = None
     raw_response: Optional[Dict[str, Any]] = None
+    tool_calls: Optional[List[ToolCall]] = None  # For function calling
+    content_blocks: Optional[List[Union[TextContent, ImageContent]]] = None  # For multimodal
 
     def __str__(self) -> str:
         return self.content
