@@ -35,11 +35,11 @@ def test_retry_config_custom():
 
 def test_exponential_backoff_attempt_0():
     """Test exponential_backoff for first attempt."""
-    config = RetryConfig(base_delay=1.0, exponential_base=2.0)
+    config = RetryConfig(base_delay=1.0, exponential_base=2.0, jitter=False)
 
     # First retry (attempt 0): 1.0 * 2^0 = 1.0
     delay = exponential_backoff(0, config)
-    assert 0.9 < delay < 1.1  # Account for jitter
+    assert delay == 1.0
 
 
 def test_exponential_backoff_attempt_1():

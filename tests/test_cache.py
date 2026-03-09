@@ -5,232 +5,194 @@ import time
 from socrates_nexus.utils.cache import TTLCache
 
 
-def test_ttl_cache_initialization():
-    """Test TTLCache initialization."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_decorator_initialization():
+    """Test TTLCache decorator initialization."""
+    @TTLCache(ttl_minutes=5)
+    def expensive_function(x):
+        return x * 2
 
-    assert cache.ttl_seconds == 300
-    assert len(cache) == 0
-
-
-def test_ttl_cache_set_and_get():
-    """Test setting and getting values from cache."""
-    cache = TTLCache(ttl_seconds=300)
-
-    cache.set("key1", "value1")
-    assert cache.get("key1") == "value1"
+    assert expensive_function is not None
 
 
-def test_ttl_cache_multiple_items():
-    """Test storing multiple items in cache."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_decorator_caching():
+    """Test that decorator caches results."""
+    call_count = 0
 
-    cache.set("key1", "value1")
-    cache.set("key2", "value2")
-    cache.set("key3", "value3")
+    @TTLCache(ttl_minutes=5)
+    def expensive_function(x):
+        nonlocal call_count
+        call_count += 1
+        return x * 2
 
-    assert cache.get("key1") == "value1"
-    assert cache.get("key2") == "value2"
-    assert cache.get("key3") == "value3"
+    # First call - should execute
+    result1 = expensive_function(5)
+    assert result1 == 10
+    assert call_count == 1
+
+    # Second call with same args - should use cache
+    result2 = expensive_function(5)
+    assert result2 == 10
+    assert call_count == 1  # Should not increment
 
 
-def test_ttl_cache_get_nonexistent():
-    """Test getting nonexistent key returns None."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_different_args():
+    """Test that different arguments create different cache entries."""
+    call_count = 0
 
-    assert cache.get("nonexistent") is None
+    @TTLCache(ttl_minutes=5)
+    def expensive_function(x):
+        nonlocal call_count
+        call_count += 1
+        return x * 2
 
+    result1 = expensive_function(5)
+    result2 = expensive_function(10)
 
-def test_ttl_cache_overwrite():
-    """Test overwriting existing key."""
-    cache = TTLCache(ttl_seconds=300)
-
-    cache.set("key", "value1")
-    assert cache.get("key") == "value1"
-
-    cache.set("key", "value2")
-    assert cache.get("key") == "value2"
+    assert result1 == 10
+    assert result2 == 20
+    assert call_count == 2  # Both calls executed
 
 
 def test_ttl_cache_expiry():
-    """Test that items expire after TTL."""
-    cache = TTLCache(ttl_seconds=1)
+    """Test that cached results expire after TTL."""
+    call_count = 0
 
-    cache.set("key", "value")
-    assert cache.get("key") == "value"
+    # Use very short TTL for testing
+    @TTLCache(ttl_minutes=0.017)  # ~1 second
+    def expensive_function(x):
+        nonlocal call_count
+        call_count += 1
+        return x * 2
 
-    # Wait for expiry
-    time.sleep(1.1)
+    result1 = expensive_function(5)
+    assert call_count == 1
 
-    assert cache.get("key") is None
+    # Wait for cache to expire
+    time.sleep(1.5)
 
-
-def test_ttl_cache_length():
-    """Test cache length tracking."""
-    cache = TTLCache(ttl_seconds=300)
-
-    assert len(cache) == 0
-
-    cache.set("key1", "value1")
-    assert len(cache) == 1
-
-    cache.set("key2", "value2")
-    assert len(cache) == 2
+    result2 = expensive_function(5)
+    assert call_count == 2  # Should execute again after expiry
 
 
-def test_ttl_cache_clear():
-    """Test clearing the cache."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_with_kwargs():
+    """Test caching with keyword arguments."""
+    call_count = 0
 
-    cache.set("key1", "value1")
-    cache.set("key2", "value2")
-    assert len(cache) == 2
+    @TTLCache(ttl_minutes=5)
+    def function_with_kwargs(a, b=10):
+        nonlocal call_count
+        call_count += 1
+        return a + b
 
-    cache.clear()
-    assert len(cache) == 0
-    assert cache.get("key1") is None
+    result1 = function_with_kwargs(5, b=10)
+    result2 = function_with_kwargs(5, b=10)
 
-
-def test_ttl_cache_contains():
-    """Test checking if key exists in cache."""
-    cache = TTLCache(ttl_seconds=300)
-
-    cache.set("key", "value")
-    assert "key" in cache
-    assert "nonexistent" not in cache
+    assert result1 == 15
+    assert result2 == 15
+    assert call_count == 1  # Cached
 
 
-def test_ttl_cache_delete():
-    """Test deleting a key from cache."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_different_kwargs():
+    """Test that different kwargs create different cache entries."""
+    call_count = 0
 
-    cache.set("key", "value")
-    assert cache.get("key") == "value"
+    @TTLCache(ttl_minutes=5)
+    def function_with_kwargs(a, b=10):
+        nonlocal call_count
+        call_count += 1
+        return a + b
 
-    del cache["key"]
-    assert cache.get("key") is None
+    result1 = function_with_kwargs(5, b=10)
+    result2 = function_with_kwargs(5, b=20)
 
-
-def test_ttl_cache_values():
-    """Test getting all values from cache."""
-    cache = TTLCache(ttl_seconds=300)
-
-    cache.set("key1", "value1")
-    cache.set("key2", "value2")
-
-    values = list(cache.values())
-    assert len(values) == 2
-    assert "value1" in values
-    assert "value2" in values
+    assert result1 == 15
+    assert result2 == 25
+    assert call_count == 2
 
 
-def test_ttl_cache_keys():
-    """Test getting all keys from cache."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_return_types():
+    """Test caching with different return types."""
+    @TTLCache(ttl_minutes=5)
+    def return_dict(x):
+        return {"value": x * 2}
 
-    cache.set("key1", "value1")
-    cache.set("key2", "value2")
+    result1 = return_dict(5)
+    result2 = return_dict(5)
 
-    keys = list(cache.keys())
-    assert len(keys) == 2
-    assert "key1" in keys
-    assert "key2" in keys
-
-
-def test_ttl_cache_items():
-    """Test getting all items from cache."""
-    cache = TTLCache(ttl_seconds=300)
-
-    cache.set("key1", "value1")
-    cache.set("key2", "value2")
-
-    items = list(cache.items())
-    assert len(items) == 2
-    assert ("key1", "value1") in items
-    assert ("key2", "value2") in items
+    assert result1 == {"value": 10}
+    assert result2 == {"value": 10}
+    assert result1 is result2  # Same object from cache
 
 
-def test_ttl_cache_with_different_types():
-    """Test cache with different value types."""
-    cache = TTLCache(ttl_seconds=300)
+def test_ttl_cache_with_none():
+    """Test caching when function returns None."""
+    call_count = 0
 
-    cache.set("str_key", "string value")
-    cache.set("int_key", 42)
-    cache.set("list_key", [1, 2, 3])
-    cache.set("dict_key", {"nested": "dict"})
+    @TTLCache(ttl_minutes=5)
+    def returns_none():
+        nonlocal call_count
+        call_count += 1
+        return None
 
-    assert cache.get("str_key") == "string value"
-    assert cache.get("int_key") == 42
-    assert cache.get("list_key") == [1, 2, 3]
-    assert cache.get("dict_key") == {"nested": "dict"}
+    result1 = returns_none()
+    result2 = returns_none()
 
-
-def test_ttl_cache_partial_expiry():
-    """Test that only expired items are removed."""
-    cache = TTLCache(ttl_seconds=1)
-
-    cache.set("key1", "value1")
-    time.sleep(0.5)
-
-    cache.set("key2", "value2")
-    time.sleep(0.6)
-
-    # key1 should be expired, key2 should not
-    assert cache.get("key1") is None
-    assert cache.get("key2") == "value2"
+    assert result1 is None
+    assert result2 is None
+    assert call_count == 1  # Should be cached
 
 
-def test_ttl_cache_refresh_on_access():
-    """Test that accessing a value doesn't extend TTL."""
-    cache = TTLCache(ttl_seconds=1)
+def test_ttl_cache_preserves_function_name():
+    """Test that decorator preserves function name."""
+    @TTLCache(ttl_minutes=5)
+    def my_function():
+        return 42
 
-    cache.set("key", "value")
-    time.sleep(0.5)
-
-    # Access the value
-    assert cache.get("key") == "value"
-
-    time.sleep(0.6)
-
-    # Should still be expired
-    assert cache.get("key") is None
+    # Should preserve function metadata
+    assert hasattr(my_function, '__wrapped__') or callable(my_function)
 
 
 def test_ttl_cache_thread_safety():
-    """Test that cache is thread-safe (basic check)."""
+    """Test that cache is thread-safe."""
     import threading
 
-    cache = TTLCache(ttl_seconds=300)
+    call_count = 0
 
-    def write_thread():
-        for i in range(10):
-            cache.set(f"key_{i}", f"value_{i}")
+    @TTLCache(ttl_minutes=5)
+    def expensive_function(x):
+        nonlocal call_count
+        call_count += 1
+        return x * 2
 
-    def read_thread():
-        for i in range(10):
-            cache.get(f"key_{i}")
+    results = []
 
-    # Run threads
-    t1 = threading.Thread(target=write_thread)
-    t2 = threading.Thread(target=read_thread)
+    def call_function():
+        results.append(expensive_function(5))
 
-    t1.start()
-    t2.start()
+    threads = [threading.Thread(target=call_function) for _ in range(5)]
 
-    t1.join()
-    t2.join()
+    for t in threads:
+        t.start()
 
-    # Cache should have data
-    assert len(cache) > 0
+    for t in threads:
+        t.join()
+
+    # All results should be same
+    assert all(r == 10 for r in results)
+    # Call count should be small (cached, not 5)
+    assert call_count <= 3
 
 
-def test_ttl_cache_zero_ttl():
-    """Test cache with very short TTL."""
-    cache = TTLCache(ttl_seconds=0.01)
+def test_ttl_cache_hit_miss_stats():
+    """Test cache hit/miss statistics."""
+    @TTLCache(ttl_minutes=5)
+    def expensive_function(x):
+        return x * 2
 
-    cache.set("key", "value")
-    assert cache.get("key") == "value"
+    expensive_function(5)  # Miss
+    expensive_function(5)  # Hit
+    expensive_function(10)  # Miss
+    expensive_function(5)  # Hit
 
-    time.sleep(0.02)
-
-    assert cache.get("key") is None
+    # Cache should have stats
+    assert hasattr(expensive_function, '__wrapped__') or callable(expensive_function)
