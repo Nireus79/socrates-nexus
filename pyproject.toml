@@ -101,7 +101,14 @@ Repository = "https://github.com/Nireus79/socrates-nexus"
 Changelog = "https://github.com/Nireus79/socrates-nexus/releases"
 
 [tool.setuptools]
-packages = ["socrates_nexus"]
+packages = [
+    "socrates_nexus",
+    "socrates_nexus.providers",
+    "socrates_nexus.utils",
+    "socrates_nexus.integrations",
+    "socrates_nexus.integrations.openclaw",
+    "socrates_nexus.integrations.langchain",
+]
 
 [tool.setuptools.package-dir]
 "" = "src"
