@@ -111,6 +111,77 @@ async def main():
 asyncio.run(main())
 ```
 
+## Configuration
+
+### Common Configuration Options
+
+```python
+from socrates_nexus import LLMClient, LLMConfig
+
+config = LLMConfig(
+    # Provider and model
+    provider="anthropic",
+    model="claude-opus",
+    api_key="sk-ant-...",
+
+    # Retry behavior
+    retry_attempts=3,
+    retry_backoff_factor=2.0,
+    request_timeout=60,
+
+    # Response caching
+    cache_responses=True,
+    cache_ttl=300,  # 5 minutes
+
+    # Optional
+    temperature=0.7,
+    max_tokens=1024,
+)
+
+client = LLMClient(config=config)
+```
+
+### Environment Variables
+
+Socrates Nexus automatically reads these if config not provided:
+- `ANTHROPIC_API_KEY` - Anthropic Claude
+- `OPENAI_API_KEY` - OpenAI GPT
+- `GOOGLE_API_KEY` - Google Gemini
+- `ANTHROPIC_BASE_URL` - Custom Anthropic endpoint
+- `OPENAI_BASE_URL` - Custom OpenAI endpoint
+
+## Error Handling
+
+Socrates Nexus provides specific exception types for programmatic error handling:
+
+```python
+from socrates_nexus import (
+    NexusError,
+    RateLimitError,
+    AuthenticationError,
+    InvalidAPIKeyError,
+    TimeoutError,
+    ContextLengthExceededError,
+    ModelNotFoundError,
+)
+
+try:
+    response = client.chat("Query")
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after} seconds")
+except AuthenticationError as e:
+    print(f"Auth failed: {e.message}")
+except ContextLengthExceededError as e:
+    print(f"Input too long: {e.message}")
+except NexusError as e:
+    print(f"LLM Error ({e.error_code}): {e.message}")
+```
+
+All exceptions include:
+- `message` - Human-readable error description
+- `error_code` - Machine-readable error code
+- `context` - Dict with provider-specific details
+
 ## Key Features
 
 ### 1. **Automatic Retries**
@@ -147,26 +218,80 @@ stats = client.get_usage_stats()
 print(f"Total spent: ${stats.total_cost_usd}")
 ```
 
-### 3. **Multi-LLM Fallback**
+### 3. **Multi-LLM Fallback & Resilience**
 
-Automatically try multiple models if one fails:
+Build resilient applications with multiple fallback strategies:
 
+**Sequential Fallback** - Try providers in order:
 ```python
-client = LLMClient(
-    provider="anthropic",
-    model="claude-opus",
-    api_key="...",
-    fallback_providers=[
+def safe_chat(message: str):
+    providers = [
+        {"provider": "anthropic", "model": "claude-opus", "api_key": "..."},
         {"provider": "openai", "model": "gpt-4", "api_key": "..."},
         {"provider": "google", "model": "gemini-pro", "api_key": "..."},
     ]
-)
 
-# If Claude fails, automatically tries GPT-4, then Gemini
-response = client.chat("Query with fallback")
+    for config in providers:
+        try:
+            client = LLMClient(**config)
+            return client.chat(message)
+        except Exception:
+            continue
+    raise Exception("All providers failed")
 ```
 
-### 4. **Response Caching**
+**Parallel Fallback** - Try all at once, use first successful:
+```python
+import asyncio
+from socrates_nexus import AsyncLLMClient
+
+async def parallel_fallback(message: str):
+    clients = [
+        AsyncLLMClient(provider="anthropic", model="claude-opus", api_key="..."),
+        AsyncLLMClient(provider="openai", model="gpt-4", api_key="..."),
+    ]
+
+    results = await asyncio.gather(
+        *[c.chat(message) for c in clients],
+        return_exceptions=True
+    )
+
+    for result in results:
+        if not isinstance(result, Exception):
+            return result
+```
+
+### 4. **Token Usage Tracking**
+
+Real-time cost tracking with provider breakdowns:
+
+```python
+client = LLMClient(provider="anthropic", model="claude-opus", api_key="...")
+
+# Track per-request
+response = client.chat("What is Python?")
+print(f"This request cost: ${response.usage.cost_usd:.6f}")
+print(f"Input tokens: {response.usage.input_tokens}")
+print(f"Output tokens: {response.usage.output_tokens}")
+
+# Track cumulative usage
+stats = client.get_usage_stats()
+print(f"Total spent across all requests: ${stats.total_cost_usd:.2f}")
+print(f"Total requests: {stats.total_requests}")
+
+# Per-provider breakdown
+for provider, p_stats in stats.by_provider.items():
+    print(f"{provider}: {p_stats['requests']} requests, ${p_stats['cost_usd']:.2f}")
+
+# Custom tracking callbacks
+def log_expensive_requests(usage):
+    if usage.cost_usd > 0.01:
+        print(f"Expensive request: ${usage.cost_usd:.6f}")
+
+client.add_usage_callback(log_expensive_requests)
+```
+
+### 5. **Response Caching**
 
 Cache identical requests to save cost and time:
 
@@ -190,27 +315,51 @@ print(f"Saved: ${response1.usage.cost_usd * 0.9}")
 
 ## Supported Providers
 
-| Provider | Models | Status |
-|----------|--------|--------|
-| Anthropic | Claude 3 (Opus, Sonnet, Haiku) | ✅ In development |
-| OpenAI | GPT-4, GPT-3.5-turbo | ✅ In development |
-| Google | Gemini Pro, Gemini Vision | ✅ In development |
-| Ollama | Llama 2, Mistral, etc. | ✅ In development |
-| HuggingFace | Any open-source model | ✅ In development |
+| Provider | Models | API Key | Status |
+|----------|--------|---------|--------|
+| **Anthropic** | Claude 3 (Opus, Sonnet, Haiku), Claude 3.5 Sonnet | Required | ✅ Full |
+| **OpenAI** | GPT-4, GPT-4o, GPT-3.5-turbo | Required | ✅ Full |
+| **Google** | Gemini 1.5 Pro, Gemini 1.5 Flash | Required | ✅ Full |
+| **Ollama** | Llama 2, Mistral, Neural Chat, Orca (local) | Not required | ✅ Full |
+
+### Setup Each Provider
+
+**Anthropic Claude:**
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
+
+**OpenAI GPT:**
+```bash
+export OPENAI_API_KEY="sk-..."
+```
+
+**Google Gemini:**
+```bash
+export GOOGLE_API_KEY="..."
+```
+
+**Ollama (Local):**
+```bash
+# Install Ollama: https://ollama.ai
+ollama pull llama2
+ollama serve  # Starts on http://localhost:11434
+# No API key needed!
+```
 
 ## Examples
 
-See the `examples/` directory for complete examples:
+See the `examples/` directory for complete, runnable examples:
 
-- `01_anthropic_claude.py` - Using Claude
-- `02_openai_gpt4.py` - Using GPT-4
-- `03_google_gemini.py` - Using Gemini
-- `04_ollama_local.py` - Using local Llama
-- `05_streaming.py` - Streaming responses
-- `06_async_calls.py` - Async usage
-- `07_token_tracking.py` - Token tracking and costs
-- `08_multi_model_fallback.py` - Multi-model fallback
-- `09_error_handling.py` - Error handling
+- **`01_anthropic_basic.py`** - Basic Claude usage, token tracking, and cost calculation
+- **`02_openai_gpt4.py`** - OpenAI GPT-4 usage with streaming
+- **`03_google_gemini.py`** - Google Gemini basic and streaming calls
+- **`04_ollama_local.py`** - Local LLM with Ollama (no API key required)
+- **`05_streaming.py`** - Streaming patterns: real-time output, chunk accumulation, progress tracking
+- **`06_async_calls.py`** - Async/await, concurrent requests, multi-provider parallel execution
+- **`07_token_tracking.py`** - Usage statistics, cost monitoring, per-provider breakdowns
+- **`08_error_handling.py`** - Error types, safe error catching, automatic retry behavior
+- **`09_provider_fallback.py`** - Provider fallback strategies: sequential, parallel, cost-optimized, model escalation
 
 ## Documentation
 
@@ -272,13 +421,30 @@ Socrates Nexus is extracted from [Socrates AI](https://github.com/Nireus79/Socra
 
 ## Roadmap
 
-- ✅ Base client structure
-- 🔄 Provider implementations (Claude, GPT-4, Gemini, Ollama, HuggingFace)
-- 🔄 Streaming for all providers
+### Phase 1: Foundation (Days 1-14) ✅ Complete
+- ✅ Base client structure (sync + async)
+- ✅ Provider implementations (Claude, GPT-4, Gemini, Ollama)
+- ✅ Streaming support for all providers
+- ✅ Automatic retry logic with exponential backoff
+- ✅ Token tracking and cost calculation
+- ✅ Response caching (TTL-based)
+- ✅ Multi-provider fallback patterns
+- ✅ 9 comprehensive examples
+- ✅ Error handling with specific exception types
+
+### Phase 2: Enhancement (Days 15-21) 🔄 In Progress
+- 🔄 Unit tests (75%+ coverage target)
+- 🔄 Integration tests
 - ⏳ Vision models support
 - ⏳ Function calling for all providers
-- ⏳ Batch processing
+- ⏳ Batch processing API
+
+### Phase 3: Production (Days 22+) ⏳ Planned
 - ⏳ Monitoring and observability
+- ⏳ Rate limit optimization
+- ⏳ Extended model support (Cohere, Replicate, etc.)
+- ⏳ GitHub Actions CI/CD
+- ⏳ PyPI publishing
 
 ## Support
 
