@@ -8,7 +8,7 @@ import functools
 import logging
 import threading
 from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple
 
 
 class TTLCache:
@@ -200,3 +200,88 @@ def cached(ttl_minutes: int = 5) -> TTLCache:
         >>> print(stats)  # {'hits': 1, 'misses': 1, 'hit_rate': '50.0%', ...}
     """
     return TTLCache(ttl_minutes=ttl_minutes)
+
+
+class ResponseCache:
+    """
+    Simple key-value cache for response objects with TTL.
+
+    Used by LLMClient for caching chat responses.
+    """
+
+    def __init__(self, ttl_minutes: int = 5):
+        """
+        Initialize response cache.
+
+        Args:
+            ttl_minutes: Time-to-live for cached items in minutes (default: 5)
+        """
+        self._ttl = timedelta(minutes=ttl_minutes)
+        self._cache: Dict[str, Tuple[Any, datetime]] = {}
+        self._lock = threading.RLock()
+        self._logger = logging.getLogger("response_cache")
+
+    def get(self, key: str) -> Optional[Any]:
+        """
+        Get a cached value if it exists and hasn't expired.
+
+        Args:
+            key: Cache key
+
+        Returns:
+            Cached value or None if not found or expired
+        """
+        with self._lock:
+            if key not in self._cache:
+                return None
+
+            value, timestamp = self._cache[key]
+            if datetime.now() - timestamp < self._ttl:
+                return value
+
+            # Expired - remove it
+            del self._cache[key]
+            return None
+
+    def set(self, key: str, value: Any) -> None:
+        """
+        Store a value in the cache.
+
+        Args:
+            key: Cache key
+            value: Value to cache
+        """
+        with self._lock:
+            self._cache[key] = (value, datetime.now())
+
+    def clear(self) -> None:
+        """Clear all cached items."""
+        with self._lock:
+            self._cache.clear()
+            self._logger.info("Response cache cleared")
+
+    def cleanup_expired(self) -> int:
+        """
+        Remove all expired entries.
+
+        Returns:
+            Number of entries removed
+        """
+        count = 0
+        current_time = datetime.now()
+
+        with self._lock:
+            expired_keys = [
+                key
+                for key, (_, timestamp) in self._cache.items()
+                if current_time - timestamp >= self._ttl
+            ]
+
+            for key in expired_keys:
+                del self._cache[key]
+                count += 1
+
+        if count > 0:
+            self._logger.debug(f"Cleaned up {count} expired cache entries")
+
+        return count

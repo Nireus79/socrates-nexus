@@ -12,7 +12,7 @@ from .providers import (
     GoogleProvider,
     OllamaProvider,
 )
-from .utils.cache import TTLCache
+from .utils.cache import ResponseCache
 
 
 class AsyncLLMClient:
@@ -59,11 +59,11 @@ class AsyncLLMClient:
         self.config = config
         self.usage_stats = UsageStats()
         self._provider: Optional[BaseProvider] = None
-        self._cache: Optional[TTLCache] = None
+        self._cache: Optional[ResponseCache] = None
 
         # Initialize cache if enabled
         if config.cache_responses:
-            self._cache = TTLCache(ttl_minutes=config.cache_ttl / 60)
+            self._cache = ResponseCache(ttl_minutes=int(config.cache_ttl / 60))
 
     @property
     def provider(self) -> BaseProvider:
