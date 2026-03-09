@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "socrates-nexus"
-version = "0.1.0"
-description = "Universal LLM client for production - works with Claude, GPT-4, Gemini, Llama, and any LLM"
+version = "0.2.0"
+description = "Universal LLM client for production - works with Claude, GPT-4, Gemini, Llama, and any LLM. Built-in integrations with Openclaw and LangChain."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [

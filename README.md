@@ -23,6 +23,37 @@ Most LLM clients handle the happy path. Socrates Nexus handles **production**:
 - ✅ **Type hints throughout** - Better IDE experience
 - ✅ **Universal API** - Same code works with Claude, GPT-4, Gemini, Llama
 
+## Framework Integrations
+
+### Use with Openclaw
+```bash
+pip install socrates-nexus[openclaw]
+```
+```python
+from socrates_nexus.integrations.openclaw import NexusLLMSkill
+
+skill = NexusLLMSkill(provider="anthropic", model="claude-opus")
+response = skill.query("What is machine learning?")
+
+# Switch providers with one line
+skill.switch_provider("openai", "gpt-4")
+```
+
+### Use with LangChain
+```bash
+pip install socrates-nexus[langchain]
+```
+```python
+from socrates_nexus.integrations.langchain import SocratesNexusLLM
+from langchain.chains import LLMChain
+
+llm = SocratesNexusLLM(provider="anthropic", model="claude-opus")
+chain = LLMChain(llm=llm, prompt=template)
+
+# Easy provider switching in chains
+llm2 = SocratesNexusLLM(provider="openai", model="gpt-4")
+```
+
 ## Quick Start
 
 ### Installation
