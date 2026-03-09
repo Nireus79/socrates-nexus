@@ -11,8 +11,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        # Smart matrix: fast for PRs, comprehensive for main
+        os: ${{ github.event_name == 'pull_request' && fromJson('["ubuntu-latest"]') || fromJson('["ubuntu-latest", "windows-latest", "macos-latest"]') }}
+        python-version: ${{ github.event_name == 'pull_request' && fromJson('["3.8", "3.12"]') || fromJson('["3.8", "3.9", "3.10", "3.11", "3.12"]') }}
 
     steps:
     - uses: actions/checkout@v4
@@ -25,33 +26,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e ".[dev]"
-
-    - name: Lint with ruff
-      run: ruff check src/ tests/
-      continue-on-error: true
-
-    - name: Format check with black
-      run: black --check src/ tests/
-      continue-on-error: true
-
-    - name: Type check with mypy
-      run: mypy src/socrates_nexus
-      continue-on-error: true
+        pip install -e ".[dev,all]"
 
     - name: Run tests with pytest
       run: |
-        pytest tests/ -v --cov=socrates_nexus --cov-report=xml
+        pytest tests/ -v --cov=socrates_nexus --cov-report=xml --cov-report=term-missing --cov-fail-under=70
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         files: ./coverage.xml
         flags: unittests
-        name: codecov-umbrella
-      continue-on-error: true
-
-    - name: Generate coverage report
-      run: |
-        pytest tests/ --cov=socrates_nexus --cov-report=html
-      continue-on-error: true
+        name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
+      if: always()

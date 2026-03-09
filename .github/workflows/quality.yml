@@ -1,0 +1,65 @@
+name: Quality Checks
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint with Ruff
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install ruff
+      - name: Lint with ruff
+        run: ruff check src/ tests/
+
+  format:
+    runs-on: ubuntu-latest
+    name: Format check with Black
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install black
+      - name: Check formatting with black
+        run: black --check src/ tests/
+
+  type-check:
+    runs-on: ubuntu-latest
+    name: Type check with mypy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev,all]"
+          pip install mypy
+      - name: Type check with mypy
+        run: mypy src/socrates_nexus
+        continue-on-error: true
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security scanning
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install bandit
+      - name: Run security check
+        run: bandit -r src/socrates_nexus
+        continue-on-error: true
