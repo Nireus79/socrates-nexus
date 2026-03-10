@@ -623,7 +623,12 @@ Socrates Nexus is extracted from [Socrates AI](https://github.com/Nireus79/Socra
 - 🚀 Socratic Learning (continuous improvement engine)
 - 🚀 Socratic Conflict (conflict detection & resolution)
 
+## 📊 Project Tracking
+
+View the complete **[Socrates Ecosystem Roadmap](https://github.com/users/Nireus79/projects)** for all packages and timeline.
+
 See [ECOSYSTEM.md](./ECOSYSTEM.md) for complete ecosystem details.
+See [GITHUB_PROJECT_SETUP.md](./GITHUB_PROJECT_SETUP.md) for project setup instructions.
 
 ## Ecosystem & Related Packages
 
