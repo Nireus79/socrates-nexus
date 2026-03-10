@@ -9,7 +9,7 @@ Extracted from **18 months of production use** in [Socrates AI](https://github.c
 [![Tests](https://github.com/Nireus79/socrates-nexus/actions/workflows/test.yml/badge.svg)](https://github.com/Nireus79/socrates-nexus/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Coverage](https://img.shields.io/badge/coverage-73%25-brightgreen)](https://github.com/Nireus79/socrates-nexus/blob/main/tests)
+[![Coverage](https://img.shields.io/badge/coverage-76%25-brightgreen)](https://github.com/Nireus79/socrates-nexus/blob/main/tests)
 
 ## Why Socrates Nexus?
 
@@ -347,6 +347,73 @@ response2 = client.chat("What is Python?")
 print(f"Saved: ${response1.usage.cost_usd * 0.9}")
 ```
 
+### 6. **Vision Models** (v0.3.0+)
+
+Analyze images with your LLM - works across all providers:
+
+```python
+client = LLMClient(provider="anthropic", model="claude-3-5-sonnet")
+
+# Analyze from URL
+response = client.chat(
+    "What's in this image?",
+    images=["https://example.com/image.jpg"]
+)
+print(response.content)
+
+# Multiple images
+response = client.chat(
+    "Compare these two images",
+    images=["image1.jpg", "image2.jpg"]
+)
+
+# Works with all providers
+for provider in ["anthropic", "openai", "google"]:
+    client = LLMClient(provider=provider)
+    response = client.chat("Describe this image", images=["photo.jpg"])
+    print(f"{provider}: {response.content}")
+```
+
+See [Vision Models Guide](docs/vision.md) for complete documentation.
+
+### 7. **Function Calling / Tool Use** (v0.3.0+)
+
+Enable LLMs to call predefined functions and integrate results:
+
+```python
+from socrates_nexus.models import Tool, Function
+
+# Define a tool
+weather_tool = Tool(
+    function=Function(
+        name="get_weather",
+        description="Get weather for a location",
+        parameters={
+            "type": "object",
+            "properties": {
+                "location": {"type": "string", "description": "City name"}
+            },
+            "required": ["location"]
+        }
+    )
+)
+
+# Use tool with LLM
+client = LLMClient(provider="anthropic", model="claude-3-5-sonnet")
+response = client.chat(
+    "What's the weather in New York?",
+    tools=[weather_tool]
+)
+
+# Check if model called the tool
+if response.tool_calls:
+    for tool_call in response.tool_calls:
+        print(f"Tool: {tool_call.function.name}")
+        print(f"Arguments: {tool_call.function.arguments}")
+```
+
+Works with Claude, GPT-4, and Gemini. See [Function Calling Guide](docs/function-calling.md) for complete documentation.
+
 ## Supported Providers
 
 | Provider | Models | API Key | Status |
@@ -394,11 +461,15 @@ See the `examples/` directory for complete, runnable examples:
 - **`07_token_tracking.py`** - Usage statistics, cost monitoring, per-provider breakdowns
 - **`08_error_handling.py`** - Error types, safe error catching, automatic retry behavior
 - **`09_provider_fallback.py`** - Provider fallback strategies: sequential, parallel, cost-optimized, model escalation
+- **`12_vision_models.py`** - Vision capabilities: image analysis from URLs/files, multiple images, provider comparison
+- **`13_function_calling.py`** - Function calling: tool definitions, multiple tools, tool execution, provider comparison
 
 ## Documentation
 
 - [Quick Start](docs/quickstart.md) - Get started in 5 minutes
 - [Providers Guide](docs/providers.md) - Setup for each LLM provider
+- [Vision Models Guide](docs/vision.md) - Image analysis and multimodal capabilities
+- [Function Calling Guide](docs/function-calling.md) - Tool use and LLM function calling
 - [API Reference](docs/api-reference.md) - Complete API documentation
 - [Advanced Usage](docs/advanced.md) - Caching, fallbacks, monitoring
 - [Architecture](docs/architecture.md) - System design and patterns
@@ -468,24 +539,27 @@ Socrates Nexus is extracted from [Socrates AI](https://github.com/Nireus79/Socra
 - ✅ 9 comprehensive examples
 - ✅ Error handling with specific exception types
 
-### Phase 2: Enhancement (Days 15-21) 🔄 In Progress
-- 🔄 Unit tests (75%+ coverage target)
-- 🔄 Integration tests
-- ⏳ Vision models support
-- ⏳ Function calling for all providers
-- ⏳ Batch processing API
+### Phase 2: Enhancement (Days 15-21) ✅ Complete
+- ✅ Unit tests (76% coverage achieved - 381 passing tests)
+- ✅ Integration tests with mocked providers
+- ✅ Vision models support (Anthropic, OpenAI, Google)
+- ✅ Function calling for all providers
+- ✅ GitHub Actions CI/CD with quality gates
+- ✅ Security scanning and dependency updates
 
-### Phase 3: Production (Days 22+) ⏳ Planned
-- ⏳ Monitoring and observability
-- ⏳ Rate limit optimization
+### Phase 3: Production (Days 22+) 🔄 In Progress
+- ✅ Monitoring and observability
+- ✅ Rate limit optimization (automatic retries)
+- ✅ GitHub Actions CI/CD (workflows complete)
+- ✅ PyPI publishing setup
 - ⏳ Extended model support (Cohere, Replicate, etc.)
-- ⏳ GitHub Actions CI/CD
-- ⏳ PyPI publishing
+- ⏳ Batch processing API
 
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Nireus79/socrates-nexus/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Nireus79/socrates-nexus/discussions)
+- **Email**: Hermes_creative@proton.me
 - **Sponsor**: [GitHub Sponsors](https://github.com/sponsors/Nireus79)
 
 ---
