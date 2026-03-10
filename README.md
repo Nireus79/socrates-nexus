@@ -625,7 +625,11 @@ Socrates Nexus is extracted from [Socrates AI](https://github.com/Nireus79/Socra
 
 ## 📊 Project Tracking
 
-View the complete **[Socrates Ecosystem Roadmap](https://github.com/users/Nireus79/projects)** for all packages and timeline.
+View the complete **[Socrates Ecosystem Roadmap](https://github.com/users/Nireus79/projects/3)** for all packages and timeline.
+
+**See also**:
+- [PROJECT_ISSUES.md](./PROJECT_ISSUES.md) - All issues to be created
+- [GITHUB_PROJECT_SETUP.md](./GITHUB_PROJECT_SETUP.md) - Setup instructions
 
 See [ECOSYSTEM.md](./ECOSYSTEM.md) for complete ecosystem details.
 See [GITHUB_PROJECT_SETUP.md](./GITHUB_PROJECT_SETUP.md) for project setup instructions.
